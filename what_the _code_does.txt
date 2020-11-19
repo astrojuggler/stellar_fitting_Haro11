@@ -1,0 +1,47 @@
+The code I am using for fitting the stellar population contribution (in the UV CLUES spectra) is extensive.
+
+In order to adapt it to my data I need to understand:
+-> what it takes as input
+-> what it does with it
+-> in which order
+-> what it gives as output
+
+
+### INPUT ###
+The input files are specified in the text file "setup_ssp.pars", have a look there: 
+names of parameters are intuitive and otherwise commented (REFERENCE FOLDER "test_mattia".
+This input file is read as the very first thing by the code, using an object defined in "parameters.py"
+
+
+### WHAT THE CODE DOES ###
+The output of this code on the terminal window tells what the code does and in which order. 
+I saved this output in "terminal_output.txt" in "test_mattia" and I use it for following and listing here the operations of the cose.
+
+1. Reading parameters
+
+2. Reading spectral line windows (ISM, stellar winds, nebular, geocornal, stellar photosphere)
+	in "spec_lines.py" functions to do that are defined and masks are applied (also based on data quality DQ -> I removed it)  
+
+3. Reading synthetic spectra counting for each:
+	 n. of ages and wavelengths (model spectra), 
+	 ages for the quanta (ionizing photon rates),
+	 ages for the O-stars and SNe (mechanical energy rates)
+   Redshifting synthetic data to given z.
+		in "synspec.py" the funcitons used in this point 3. are defined
+
+4. Reading observed UV spectrum and counting wavelengths
+   Reading observed optical spectrum and counting wavelengths
+   MW exctinciton correction of the data (wierd: I would correct the synthetic spectra)
+   Rescaling the errors of observed UV and optical fluxes, if factor is specified after spectra filenames in "setup_par.pars"
+   Resample the observed UV spectrum with a given bin width and re-counting wavelengths
+   Concatenate observed UV and optical spectra and counting wavelengths
+   Imposing maxSNR to observed spectra (when SNR of data is higher error is ajusted, i.e. increased... why?) 
+   Redshifting observed spectra to restframe, using given z (why? opposite already done with synthetic spectra...)
+	in "obsspec.py" all functions for the above are defined
+ 
+5. Convolving the synthetic spectra to the resolution of the observed UV and optical spectra
+   (...what if the resolution of the data is higher? I guess nothing changes)
+
+
+
+### OUTPUT ###

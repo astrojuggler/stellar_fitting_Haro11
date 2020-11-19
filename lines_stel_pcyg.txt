@@ -1,0 +1,13 @@
+#compiled from 
+#
+#element  ionstate   lamc            dv of interest
+Si        IV         1122.48490      2000
+Si        IV         1128.33         2000
+O         VI         1031.93         2000   
+O         VI         1037.62         2000   
+N         V          1238.821        2000   
+N         V          1242.804        2000   
+Si        IV         1393.75460      2000   
+Si        IV         1402.76970      2000   
+C         IV         1548.203        2000   
+C         IV         1550.777        2000

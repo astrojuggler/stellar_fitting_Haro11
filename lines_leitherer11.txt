@@ -1,0 +1,42 @@
+# from table 1 of Leitherer et al 2011, ApJ, 141, 37
+#
+O VI     1031.93   # wind line
+O VI     1037.62   # wind line
+N IV     1168.60 
+C IV     1168.87 
+C IV     1168.99 
+N IV     1169.06 
+N IV     1169.48 
+C III    1175.53   # photo and wind line
+N III    1183.03 
+N III    1184.54
+N V      1238.82   # wind line
+N V      1242.80   # wind line
+C III    1247.38
+Si III   1294.54 
+C III    1296.33 
+Si III   1296.74 
+Si III   1298.93
+C II     1323.93 
+N III    1324.35
+O IV     1341.64 
+Fe V     1345.61 
+Fe V     1362.86 
+Fe V     1363.08 
+Fe V     1364.82 
+O V      1371.30
+Si IV    1393.76   # wind line
+Si IV    1402.77   # wind line
+Si III   1417.24 
+C III    1426.45 
+Fe V     1427.27 
+C III    1427.85 
+Fe V     1430.44
+C III    1478.00
+N IV]    1486.50   # wind line
+S V      1501.76
+Fe IV    1530.04
+C IV     1548.19   # wind line
+C IV     1550.77   # wind line
+C III    1620.40
+He II    1640.42   # wind line

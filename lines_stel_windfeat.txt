@@ -1,0 +1,9 @@
+# this is optimized to find each PCygni line in one window with a little
+# continuum on either side.  
+#
+#element  ionstate   lamc            dv of interest
+O         VI         1033.5          6200
+N         V          1241.5          5200
+O         V          1368.5          3000
+Si        IV         1398.5          2900
+C         IV         1547.5          4400

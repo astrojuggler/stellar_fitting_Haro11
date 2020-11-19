@@ -1,0 +1,105 @@
+#The code first reads the spectral windows to mask and saves them in an array.
+#Then it creates the mask and applies it to the observed spectrum before fitting.
+# (see run_stell_fit.py and spec_lines.py)
+
+#Here I list all the regions currently masked by the code...
+#Useful conversion: 200 km/s = 1 Å
+
+#"lines_ism_lis.txt" (these are applied both in the restframe and redshifted spectrum to account for both the MW and ISM absorptions)
+#compiled from Rivera-Thorsen+ , Erb+ , Grimes+ 
+#
+#element  ionstate   lamc            dv of interest
+H         I          972.53674       1000
+C         III        977.02          300 
+S         III        1012.50         300 
+Si        II         1020.70         300 
+H         I          1025.7222       1000
+C         II         1036.34         300 
+O         I          1039.23         300 
+Ar        I          1066.66         300 
+N         II         1083.99         300 
+Fe        II         1096.88         300 
+P         V          1117.98         300 
+Fe        II         1121.97         300 
+Fe        II         1125.45         300 
+N         I          1134.41         300 
+Ar        I          1128.00         300 
+Si        II         1190.41580      300 
+Si        II         1193.28970      300 
+#Si        II*        1194.500        300  
+#Si        II*        1197.390        300  
+Si        III        1206.4995       300 
+H         I          1215.67         2000
+Si        II         1260.42210      500	#MS dv changed from 300 to 500 
+Si        II*        1265.00         300        #MS fluorescence emission line added after reading Wang+2020
+O         I          1302.16848      400 
+Si        II         1304.37020      300
+Si        II*        1309.28         300        #MS fluorescence emission line added after reading Wang+2020 
+C         II         1334.53230      700	#MS dv changed from 300 to 700 
+Si        II         1526.72         400	#MS line added because enormous in CLUES test source (NGC-7793-YSC2) 
+Fe        II         1608.4509       300 
+Al        II         1670.7886       400 
+
+
+#"lines_ism_his.txt"
+#compiled from 
+#
+#element  ionstate   lamc            dv of interest
+Si        IV         1122.48490      300
+Si        IV         1128.33         300
+O         VI         1031.93         300
+O         VI         1037.62         300
+#N         V          1238.821        300
+#N         V          1242.804        300
+#Si        IV         1393.75460      300
+#Si        IV         1402.76970      300
+#C         IV         1548.203        300
+#C         IV         1550.777        500	#MS dv changed from 300 to 500
+
+
+#"lines_neb_uv.txt"
+#compiled from Rivera-Thorsen+ , Erb+ , Grimes+ 
+#
+#element  ionstate   lamc            dv of interest
+He        II         1640.42         500.		#MS 400 -> 500
+O         III        1666.1497       400. 
+C         III        1906.683        400. 
+C         III        1908.734        400. 
+
+
+#"lines_uv_geocor.txt"
+#compiled from Rivera-Thorsen+ , Erb+ , Grimes+ 
+#
+#element  ionstate   lamc            dv of interest
+H         I          1215.67         500
+O         I          1303.5          1000
+N         I          1199.5          500	#MS changed from 200 to 300 km/s 
+
+
+#"maskwindows.txt" for NGC-7793-YSC2
+1188  1227      # Lya (for CLUES spectra)
+1130  1147      # first pixels away + FeII triplet
+1252  1257      # Si II 1250 + Si II 1254 LIS
+
+
+#"maskwindows.txt" for M51-YSC2
+1188  1234      # Lya (for CLUES spectra)
+1130  1147    # first pixels away + FeII triplet
+1252  1257      # Si II 1250 + Si II 1254 LIS
+
+1240  1240.8    # NV
+1243  1245      # NV  
+
+
+#"maskwindows.txt" for M95-YSC1
+1188  1234      # Lya (for CLUES spectra)
+1130  1147    # first pixels away + FeII triplet
+1252  1257      # Si II 1250 + Si II 1254 LIS
+
+1144  1145.3    # unknown P-cygni
+1165  1177      # CIII P-cygni
+1241.8  1243.4  # NV P-cygni 
+1400  1403.5    # SiIV P-cygni
+1548  1551.5    # CIV P-cygni feature (I mask the absorption part)
+
+

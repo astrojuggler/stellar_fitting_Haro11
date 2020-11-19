@@ -1,0 +1,6 @@
+#compiled from Rivera-Thorsen+ , Erb+ , Grimes+ 
+#
+#element  ionstate   lamc            dv of interest
+H         I          1215.67         500
+O         I          1303.5          1000
+N         I          1199.5          300	#MS changed from 200 to 300 km/s 
