@@ -124,7 +124,7 @@ if (len(sys.argv) == 3) and (sys.argv[2] == "errors"):
         #fit the mock spectrum with the same setup, method, initial conditions
         fit1pop_mock = Fit(pars, obs_mock, syn, mask)
         fit1pop_mock.setup_npop_red(spops1, ebvval=0.1, ebvmin=pars.ebvLo, ebvmax=pars.ebvHi)
-        fit1pop_mock.guessnorm_npop_red(fit2pop_mock.lmpars)  
+        fit1pop_mock.guessnorm_npop_red(fit1pop_mock.lmpars)  
         fit1pop_mock.fit_npop_red(minalg="differential_evolution")#, Nstep=pars.Nstep, Nwalker=pars.Nwalker, Nburn=pars.Nburn) 
 
         #store best fit values in a text file 
