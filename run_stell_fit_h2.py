@@ -46,7 +46,7 @@ obs.shift_to_restframe()
 
 ## continue setup of synthetic data, now we know limits of observed input
 ## convolve to instrument resolution (in place)
-syn.conv2inst(lamcUv=obs.lamc_uv, lamcOp=obs.lamc_op)        
+syn.conv2inst(lamcUv=(obs.lamc_uv130 + obs.lamc_uv160) / 2, lamcOp=obs.lamc_op)          
 
 ## merge the IFASPEC (UV) and HIRES (optical) spectra 
 syn.merge()
@@ -151,17 +151,17 @@ if (len(sys.argv) == 3) and (sys.argv[2] == "errors"):
         obs_mock.save_mock(i)
     
         #fit the mock spectrum with the same setup, method, initial conditions
-        fit1pop_mock = Fit(pars, obs_mock, syn, mask)
-        fit1pop_mock.setup_npop_red(spops1, ebvval=0.1, ebvmin=pars.ebvLo, ebvmax=pars.ebvHi)
-        fit1pop_mock.guessnorm_npop_red(fit2pop_mock.lmpars)  
-        fit1pop_mock.fit_npop_red(minalg="differential_evolution")#, Nstep=pars.Nstep, Nwalker=pars.Nwalker, Nburn=pars.Nburn) 
+        fit2pop_mock = Fit(pars, obs_mock, syn, mask)
+        fit2pop_mock.setup_npop_red(spops2, ebvval=0.1, ebvmin=pars.ebvLo, ebvmax=pars.ebvHi)
+        fit2pop_mock.guessnorm_npop_red(fit2pop_mock.lmpars)  
+        fit2pop_mock.fit_npop_red(minalg="differential_evolution")#, Nstep=pars.Nstep, Nwalker=pars.Nwalker, Nburn=pars.Nburn) 
 
         #store best fit values in a text file 
-        fit1pop_mock.store_values(i, fnOut=pars.fnClassic, fnOut2=pars.fnClassicDe)
+        fit2pop_mock.store_values(i, fnOut=pars.fnClassic, fnOut2=pars.fnClassicDe)
 
 
     #MS save and print errors
-    fit1pop.errors(n=100, fnIn=pars.fnClassic, fnIn2=pars.fnClassicDe, fnOut=pars.fnClassicErr)
+    fit2pop.errors(n=100, fnIn=pars.fnClassic, fnIn2=pars.fnClassicDe, fnOut=pars.fnClassicErr)
     
 
     endtime = time.time()
