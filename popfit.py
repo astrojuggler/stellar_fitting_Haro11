@@ -1512,8 +1512,8 @@ class Fit:
             #self.ax2.plot(self.o.lamo_reb, self.flam_ind[ipop] , ls='-'     , c=collist[ipop], label=label_str)
             
             #MS: print in the legend also the results of lmfit (all variables that end with _mi have been added for this purpose)
-            label_str_mi = r'Pop{:2d}: {:1.3f} Myr. Z={:1.5f}. {:.0f} M$_\odot$ E$_\mathrm{{B-V}}=${:1.3f}'.format(
-                          ipop+1, 10**self.age_best_mi[ipop]/10**6, self.met_best_mi[ipop], self.norm_best_mi[ipop]*10**6, self.ebv_best_mi[ipop])
+            label_str_mi = r'Pop{:2d}: {:1.3f} Myr. Z={:1.5f}. {:.2f} M$_\odot$ E$_\mathrm{{B-V}}=${:1.3f}'.format(
+                          ipop+1, 10**self.age_best_mi[ipop]/10**6, self.met_best_mi[ipop], self.norm_best_mi[ipop], self.ebv_best_mi[ipop])
             #MS: if I use only one population I want to match the color and the line style with the final model
             if self.Npop == 1:
                 line_s = '-'
