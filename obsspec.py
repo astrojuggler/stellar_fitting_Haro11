@@ -333,7 +333,23 @@ class ObsSpec:
 
         print ('Observed UV G160M spectrum rebinned to', self.pars.newBin, 'wavelength bin')
 
-
+        #mask for bad dq
+        dq_uv130_num = np.nan_to_num(self.dq_uv130_reb, nan=8, copy=False)
+        dq_uv160_num = np.nan_to_num(self.dq_uv160_reb, nan=8, copy=False)
+        bad_dq_uv130 = dq_uv130_num > 0
+        bad_dq_uv160 = dq_uv160_num > 0
+        
+        #I set flux and errors of bad dq pixels to nan so that in the average only the good ones are considered 
+        self.flam_uv130_reb[bad_dq_uv130]  = np.nan
+        self.flam_uv160_reb[bad_dq_uv160]  = np.nan
+        self.dflam_uv130_reb[bad_dq_uv130] = np.nan
+        self.dflam_uv160_reb[bad_dq_uv160] = np.nan
+        # PROBLEM: when both gratings have bad quality, weights are both zeros and sum up to zero: can't normalize!
+        # SOLUTION: set both such weigths to 1
+        both_bad = np.isnan(self.dflam_uv130_reb) & np.isnan(self.dflam_uv160_reb)
+        self.dflam_uv130_reb[both_bad] = 1.   
+        self.dflam_uv160_reb[both_bad] = 1.         
+ 
 	#combining the two UV gratings with a weighted average
 	#flux
         twof = np.c_[self.flam_uv130_reb, self.flam_uv160_reb]
@@ -360,9 +376,8 @@ class ObsSpec:
 
 	#dq
         twodq = np.c_[self.dq_uv130_reb, self.dq_uv160_reb]
-        self.dq_uv_reb = np.nanmean(twodq, axis=1)
-
-        
+        #if one pixle of the two gratings has good data quality I keep only that and set dq to 0
+        self.dq_uv_reb = np.nanmin(twodq, axis=1)
 
         #MS no need to resample optical spectrum: resolution is 1.25A 
 
