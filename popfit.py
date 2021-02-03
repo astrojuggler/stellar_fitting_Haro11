@@ -11,6 +11,9 @@ from extin import Cal
 from mathfunc import ind_nearest, argmin_true
 from convol import convolve_concat
 
+#MS to check if a file exists
+import os
+
 
 collist = [ 'C1', 'C2', 'C3' ]
 
@@ -146,18 +149,18 @@ class Fit:
   
 
 
-    def plot_obs(self, lines2plot, xminUv=1130., xmaxUv=1772., yminUv=0., ymaxUv=20., 
-                 xminOp=3500., xmaxOp=8000., yminOp=0., ymaxOp=1.5):
+    def plot_obs(self, lines2plot, xminUv=1130., xmaxUv=1810., yminUv=0., ymaxUv=50., 
+                 xminOp=3500., xmaxOp=8000., yminOp=0., ymaxOp=8.0):
   
         self.xminUv = 1000.
         self.xmaxUv = 1800.
         self.yminUv = yminUv
         self.ymaxUv = ymaxUv
         self.xminOp = 4500. #MS  
-        self.xmaxOp = 8000. #MS
+        self.xmaxOp = 7500. #MS
         self.yminOp = yminOp
         self.ymaxOp = ymaxOp
-  
+          
         xlab = 'Observed Wavelength [ $\mathrm{\AA}$ ]'
         ylab = 'Observed f$_\lambda$ [ $10^{-15}$ c.g.s./$\mathrm{\AA}$ ]'
         
@@ -1195,6 +1198,15 @@ class Fit:
         self.qheii_best_mi = sp.zeros(self.Npop)
         self.lmech_best_mi = sp.zeros(self.Npop)
         self.emech_best_mi = sp.zeros(self.Npop)
+        self.lmechSn_best_mi = sp.zeros(self.Npop)
+        self.emechSn_best_mi = sp.zeros(self.Npop)
+        self.lmechStel_best_mi = sp.zeros(self.Npop)
+        self.emechStel_best_mi = sp.zeros(self.Npop)
+        self.pmechStel_best_mi = sp.zeros(self.Npop)
+        self.lmechOB_best_mi = sp.zeros(self.Npop)
+        self.pmechOB_best_mi = sp.zeros(self.Npop)
+        self.lmechWR_best_mi = sp.zeros(self.Npop)
+        self.pmechWR_best_mi = sp.zeros(self.Npop)
 
         self.fesc_mi      = sp.zeros((self.Npop,self.o.Nlam_reb))
         self.flam_ind_mi  = sp.zeros((self.Npop,self.o.Nlam_reb))
@@ -1272,7 +1284,18 @@ class Fit:
             self.qhei_best_mi [ipop] = self.norm_best_mi[ipop] * 10.**d_mi[1] 
             self.qheii_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[2] 
             self.lmech_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[3] 
-            self.emech_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[4] 
+            self.emech_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[4]
+
+            #MS more energetics quantities 
+            self.lmechSn_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[5] 
+            self.emechSn_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[6]
+            self.lmechStel_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[9] 
+            self.emechStel_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[10]
+            self.pmechStel_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[11]
+            self.lmechOB_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[12] 
+            self.pmechOB_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[13]
+            self.lmechWR_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[14] 
+            self.pmechWR_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[15]
 
             # need a solution for the errors on secondary quantities, now fn.s are spline and no longer differentiatable
             # comment for now.. 
@@ -1322,6 +1345,7 @@ class Fit:
 
         self.chi2_best_mi  = sp.sum( (self.o.flam_reb[self.imask]-self.flam_best_mi[self.imask])**2./self.o.dflam_reb[self.imask]**2. )
         self.chi2n_best_mi = self.chi2_best_mi / (self.Ndp - 1)
+        self.Ndof = self.Ndp - 4 * self.Npop
         
         #MS I want to call pop1 the population that weights more on the flux and pop2 the other one, and calssify accordingly all the parameters
 
@@ -1336,7 +1360,16 @@ class Fit:
         self.qhei_best_mi  = self.qhei_best_mi[inds]  
         self.qheii_best_mi = self.qheii_best_mi[inds]  
         self.lmech_best_mi = self.lmech_best_mi[inds]  
-        self.emech_best_mi = self.emech_best_mi[inds]  
+        self.emech_best_mi = self.emech_best_mi[inds]
+        self.lmechSn_best_mi = self.lmechSn_best_mi[inds]  
+        self.emechSn_best_mi = self.emechSn_best_mi[inds]  
+        self.lmechStel_best_mi = self.lmechStel_best_mi[inds]  
+        self.emechStel_best_mi = self.emechStel_best_mi[inds] 
+        self.pmechStel_best_mi = self.pmechStel_best_mi[inds]  
+        self.lmechOB_best_mi = self.lmechOB_best_mi[inds]  
+        self.pmechOB_best_mi = self.pmechOB_best_mi[inds]  
+        self.lmechWR_best_mi = self.lmechWR_best_mi[inds]  
+        self.pmechWR_best_mi = self.pmechWR_best_mi[inds]    
 
         self.fesc_mi      = self.fesc_mi[inds]  
         self.flam_ind_mi  = self.flam_ind_mi[inds]  
@@ -1450,8 +1483,28 @@ class Fit:
             s.append('{:>20} : {:1.5e}'.format(
                      self.popkeys  [ipop], self.lmech_best_mi[ipop]))
 
+        s.append('  Integrated SN mechanical energy since t=0, given in erg')
+        for ipop in range(self.Npop):
+            s.append('{:>20} : {:1.5e}'.format(
+                     self.popkeys  [ipop], self.emechSn_best_mi[ipop]))
+
+        s.append('  Instantaneous SN mechanical power, given in erg sec^-1')
+        for ipop in range(self.Npop):
+            s.append('{:>20} : {:1.5e}'.format(
+                     self.popkeys  [ipop], self.lmechSn_best_mi[ipop]))
+
+        s.append('  Integrated stellar winds mechanical energy since t=0, given in erg')
+        for ipop in range(self.Npop):
+            s.append('{:>20} : {:1.5e}'.format(
+                     self.popkeys  [ipop], self.emechStel_best_mi[ipop]))
+
+        s.append('  Instantaneous stellar winds mechanical power, given in erg sec^-1')
+        for ipop in range(self.Npop):
+            s.append('{:>20} : {:1.5e}'.format(
+                     self.popkeys  [ipop], self.lmechStel_best_mi[ipop]))
+
         s.append('    chi2 : {:1.5e}'.format(self.chi2_best_mi))
-        s.append('   chi2n : {:1.5e} for {:d} datapoints (N params is wrong here!)'.format(self.chi2n_best_mi, self.Ndp))
+        s.append('   chi2n : {:1.5e} for {:d} degrees of freedom'.format(self.chi2n_best_mi, self.Ndof))
         s.append('')
 
   
@@ -1512,7 +1565,7 @@ class Fit:
             #self.ax2.plot(self.o.lamo_reb, self.flam_ind[ipop] , ls='-'     , c=collist[ipop], label=label_str)
             
             #MS: print in the legend also the results of lmfit (all variables that end with _mi have been added for this purpose)
-            label_str_mi = r'Pop{:2d}: {:1.3f} Myr. Z={:1.5f}. {:.2f} M$_\odot$ E$_\mathrm{{B-V}}=${:1.3f}'.format(
+            label_str_mi = r'Pop{:2d}: {:1.1f} Myr  Z={:1.4f}  {:.2f} $10^6$M$_\odot$ E$_\mathrm{{B-V}}=${:1.2f}'.format(
                           ipop+1, 10**self.age_best_mi[ipop]/10**6, self.met_best_mi[ipop], self.norm_best_mi[ipop], self.ebv_best_mi[ipop])
             #MS: if I use only one population I want to match the color and the line style with the final model
             if self.Npop == 1:
@@ -1539,9 +1592,13 @@ class Fit:
         self.ax1.legend(loc=2)
         self.ax2.legend(loc=1)
 
-	#MS 
-        self.ax1.set_ylim(0, 20.)
-        self.ax2.set_ylim(0, 1.5 * self.o.flam_op_reb.mean())
+	#MS
+        self.imask_uv = self.imask[:len(self.o.flam_uv_reb)]
+        self.imask_op = self.imask[len(self.o.flam_uv_reb):]  
+        self.ax1.set_ylim(0, 1.5 * self.o.flam_uv_reb[self.imask_uv].max())
+        self.ax2.set_ylim(0, 1.5 * self.o.flam_op_reb[self.imask_op].max())
+        self.ax1.set_xlim(self.o.lamo_uv_reb.min(), self.o.lamo_uv_reb.max())
+        self.ax2.set_xlim(self.o.lamo_op_reb.min(), self.o.lamo_op_reb.max())
   
         self.ax1t = self.ax1.twiny()
         self.ax2t = self.ax2.twiny()
@@ -1573,6 +1630,8 @@ class Fit:
             [1640-20, 1640+20], self.p.redshift, self.o.lamo_reb[self.imask], self.o.flam_reb[self.imask], fnOut+'_heii.png')
         zoom_and_restore(self.fig2, self.ax2, self.ax2t, \
             [3400.  , 4700   ], self.p.redshift, self.o.lamo_reb[self.imask], self.o.flam_reb[self.imask], fnOut+'_4kb.png')
+        zoom_and_restore(self.fig1, self.ax1, self.ax1t, \
+            [1371-20  , 1371+20   ], self.p.redshift, self.o.lamo_reb[self.imask], self.o.flam_reb[self.imask], fnOut+'_ov.png')
   
   
         # plot the corner diagram and the walkers
@@ -1770,6 +1829,17 @@ class Fit:
         self.qheii_best_mi = sp.zeros(self.Npop)
         self.lmech_best_mi = sp.zeros(self.Npop)
         self.emech_best_mi = sp.zeros(self.Npop)
+        self.lmechSn_best_mi = sp.zeros(self.Npop)
+        self.emechSn_best_mi = sp.zeros(self.Npop)
+        self.lmechSn1b_best_mi = sp.zeros(self.Npop)
+        self.emechSn1b_best_mi = sp.zeros(self.Npop)
+        self.lmechStel_best_mi = sp.zeros(self.Npop)
+        self.emechStel_best_mi = sp.zeros(self.Npop)
+        self.pmechStel_best_mi = sp.zeros(self.Npop)
+        self.lmechOB_best_mi = sp.zeros(self.Npop)
+        self.pmechOB_best_mi = sp.zeros(self.Npop)
+        self.lmechWR_best_mi = sp.zeros(self.Npop)
+        self.pmechWR_best_mi = sp.zeros(self.Npop)
 
         self.fesc_mi      = sp.zeros((self.Npop,self.o.Nlam_reb))
         self.flam_ind_mi  = sp.zeros((self.Npop,self.o.Nlam_reb))
@@ -1790,6 +1860,17 @@ class Fit:
             self.qheii_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[2] 
             self.lmech_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[3] 
             self.emech_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[4]
+            self.lmechSn_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[5] 
+            self.emechSn_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[6]
+            self.lmechSn1b_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[7] 
+            self.emechSn1b_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[8]
+            self.lmechStel_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[9] 
+            self.emechStel_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[10]
+            self.pmechStel_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[11]
+            self.lmechOB_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[12] 
+            self.pmechOB_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[13]
+            self.lmechWR_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[14] 
+            self.pmechWR_best_mi[ipop] = self.norm_best_mi[ipop] * 10.**d_mi[15]
 
             self.fesc_mi    [ipop] = 10.** (-0.4 * self.klam * self.ebv_best_mi[ipop])
             self.flam_ind_mi[ipop] = self.norm_best_mi[ipop] * 10.**self.s.gen_flam_from_splines(
@@ -1820,7 +1901,18 @@ class Fit:
         self.qhei_best_mi  = self.qhei_best_mi[inds]  
         self.qheii_best_mi = self.qheii_best_mi[inds]  
         self.lmech_best_mi = self.lmech_best_mi[inds]  
-        self.emech_best_mi = self.emech_best_mi[inds]  
+        self.emech_best_mi = self.emech_best_mi[inds] 
+        self.lmechSn_best_mi = self.lmechSn_best_mi[inds]  
+        self.emechSn_best_mi = self.emechSn_best_mi[inds]  
+        self.lmechSn1b_best_mi = self.lmechSn1b_best_mi[inds]  
+        self.emechSn1b_best_mi = self.emechSn1b_best_mi[inds] 
+        self.lmechStel_best_mi = self.lmechStel_best_mi[inds]  
+        self.emechStel_best_mi = self.emechStel_best_mi[inds]  
+        self.pmechStel_best_mi = self.pmechStel_best_mi[inds]  
+        self.lmechOB_best_mi = self.lmechOB_best_mi[inds]  
+        self.pmechOB_best_mi = self.pmechOB_best_mi[inds]  
+        self.lmechWR_best_mi = self.lmechWR_best_mi[inds]  
+        self.pmechWR_best_mi = self.pmechWR_best_mi[inds]   
 
         
         if i == 0:
@@ -1837,7 +1929,7 @@ class Fit:
         s += "{:6d}  ".format(i)
         s += "{:1.5e}   ".format(self.chi2n_best_mi)
         for ipop in range(self.Npop):
-            s += "{:1.5f}  {:1.5f}  {:1.5e}  {:1.5f}  ".format(self.age_best_mi [ipop], self.met_best_mi [ipop], self.norm_best_mi[ipop], self.ebv_best_mi[ipop])           
+            s += "{:1.5f}  {:1.5f}  {:1.5e}  {:1.5f}  ".format(self.age_best_mi [ipop], self.met_best_mi [ipop], self.norm_best_mi[ipop], self.ebv_best_mi[ipop])                      
         
         fh.write(s)
         fh.close()
@@ -1847,14 +1939,14 @@ class Fit:
             s = "# Derived-quantities values from the 100 fits of the classic monte carlo"
             s += "\n#{:>5}  ".format("N") 
             for ipop in range(self.Npop):
-                s += "{:>8}  {:>8}  {:>11}  {:>8}  {:>8}  ".format(self.popkeys[ipop]+"_qhi", self.popkeys[ipop]+"_qhei", self.popkeys[ipop]+"_qheii", self.popkeys[ipop]+"_lmech", self.popkeys[ipop]+"_emech")
+                s += "{:>8}  {:>8}  {:>11}  {:>8}  {:>8}  {:>8}  {:>8}  ".format(self.popkeys[ipop]+"_qhi", self.popkeys[ipop]+"_qhei", self.popkeys[ipop]+"_qheii", self.popkeys[ipop]+"_lmech", self.popkeys[ipop]+"_emech", self.popkeys[ipop]+"_emechSn", self.popkeys[ipop]+"_lmechStel")
         else: 
             fh2 = open(fnOut2, "a+")
             s = ""
         s += "\n"
         s += "{:6d}  ".format(i)
         for ipop in range(self.Npop):
-            s += "{:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  ".format(self.qhi_best_mi [ipop], self.qhei_best_mi [ipop], self.qheii_best_mi[ipop], self.lmech_best_mi[ipop], self.emech_best_mi[ipop])            
+            s += "{:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  ".format(self.qhi_best_mi [ipop], self.qhei_best_mi [ipop], self.qheii_best_mi[ipop], self.lmech_best_mi[ipop], self.emech_best_mi[ipop], self.emechSn_best_mi[ipop], self.lmechStel_best_mi[ipop])            
         
         fh2.write(s)
         fh2.close()
@@ -1872,6 +1964,8 @@ class Fit:
         self.qheii_med  = sp.zeros(self.Npop)
         self.lmech_med  = sp.zeros(self.Npop)
         self.emech_med  = sp.zeros(self.Npop)
+        self.lmechStel_med  = sp.zeros(self.Npop)
+        self.emechSn_med  = sp.zeros(self.Npop)
 
         self.ageLog_lo = sp.zeros(self.Npop)
         self.age_lo    = sp.zeros(self.Npop)
@@ -1884,6 +1978,8 @@ class Fit:
         self.qheii_lo  = sp.zeros(self.Npop)
         self.lmech_lo  = sp.zeros(self.Npop)
         self.emech_lo  = sp.zeros(self.Npop)
+        self.lmechStel_lo  = sp.zeros(self.Npop)
+        self.emechSn_lo  = sp.zeros(self.Npop)
 
         self.ageLog_hi = sp.zeros(self.Npop)
         self.age_hi    = sp.zeros(self.Npop)
@@ -1896,6 +1992,8 @@ class Fit:
         self.qheii_hi  = sp.zeros(self.Npop)
         self.lmech_hi  = sp.zeros(self.Npop)
         self.emech_hi  = sp.zeros(self.Npop)
+        self.lmechStel_hi  = sp.zeros(self.Npop)
+        self.emechSn_hi  = sp.zeros(self.Npop)
   
         chi2n    = sp.zeros(n)
         agesLog  = sp.zeros((self.Npop,n))
@@ -1907,6 +2005,8 @@ class Fit:
         qheiis   = sp.zeros((self.Npop,n))
         lmechs   = sp.zeros((self.Npop,n))      
         emechs   = sp.zeros((self.Npop,n))
+        lmechStels   = sp.zeros((self.Npop,n))      
+        emechSns   = sp.zeros((self.Npop,n))
         
         chi2n = np.loadtxt(fnIn, unpack=True, usecols=[0])
         self.chi2n_best = chi2n.min()
@@ -1914,7 +2014,7 @@ class Fit:
 
         for ipop in range(self.Npop):
             agesLog[ipop], mets[ipop], norms[ipop], ebvs[ipop] = np.loadtxt(fnIn, unpack=True, usecols=list(1+ 5**ipop + np.array([0,1,2,3])))
-            qhis[ipop], qheis[ipop], qheiis[ipop], lmechs[ipop], emechs[ipop] = np.loadtxt(fnIn2, unpack=True, usecols=list(6**ipop + np.array([0,1,2,3,4])))
+            qhis[ipop], qheis[ipop], qheiis[ipop], lmechs[ipop], emechs[ipop], emechSns[ipop], lmechStels[ipop] = np.loadtxt(fnIn2, unpack=True, usecols=list(8**ipop + np.array([0,1,2,3,4,5,6])))
             
 #        for i in range(n):
 #            inds = ages[:,i].argsort()
@@ -1951,6 +2051,8 @@ class Fit:
             self.qheii_med[ipop], self.qheii_lo[ipop], self.qheii_hi[ipop] = np.percentile(qheiis[ipop,:], [50., 15.8655, 84.1345])
             self.lmech_med[ipop], self.lmech_lo[ipop], self.lmech_hi[ipop] = np.percentile(lmechs[ipop,:], [50., 15.8655, 84.1345])
             self.emech_med[ipop], self.emech_lo[ipop], self.emech_hi[ipop] = np.percentile(emechs[ipop,:], [50., 15.8655, 84.1345])
+            self.lmechStel_med[ipop], self.lmechStel_lo[ipop], self.lmechStel_hi[ipop] = np.percentile(lmechStels[ipop,:], [50., 15.8655, 84.1345])
+            self.emechSn_med[ipop], self.emechSn_lo[ipop], self.emechSn_hi[ipop] = np.percentile(emechSns[ipop,:], [50., 15.8655, 84.1345])
 
             #MS deriving confidence intervals of ionizing rates and energies wiht lmfit best values, min and max values of Z are bound to 0.001 - 0.04
 #            if self.met_best_mi[ipop] - self.met_err[ipop] > 0:
@@ -2069,6 +2171,16 @@ class Fit:
             s.append('{:>20} : {:1.5e} [ {:1.5e} {:1.5e} ]'.format(
                      self.popkeys  [ipop], self.lmech_best_mi[ipop], self.lmech_lo[ipop], self.lmech_hi[ipop]))
 
+        s.append('  Integrated mechanical energy from Supernovae since t=0, given in erg')
+        for ipop in range(self.Npop):
+            s.append('{:>20} : {:1.5e} [ {:1.5e} {:1.5e} ]'.format(
+                     self.popkeys  [ipop], self.emechSn_best_mi[ipop], self.emechSn_lo[ipop], self.emechSn_hi[ipop]))
+
+        s.append('  Instantaneous mechanical power from Stellar Winds, given in erg sec^-1')
+        for ipop in range(self.Npop):
+            s.append('{:>20} : {:1.5e} [ {:1.5e} {:1.5e} ]'.format(
+                     self.popkeys  [ipop], self.lmechStel_best_mi[ipop], self.lmechStel_lo[ipop], self.lmechStel_hi[ipop]))
+
 
         s.append('    chi2 : {:1.5e}'.format(self.chi2_best_mi))
         s.append('   chi2n : {:1.5e} for {:d} datapoints (N params is wrong here!)'.format(self.chi2n_best_mi, self.Ndp))
@@ -2081,7 +2193,58 @@ class Fit:
         fh.close()
 
 
+#MS writing table with all population parameters and feedback quantities (need to read and fill in the table or updating it)
+#MS I need the name of the target to check!!
 
+#MS Problems: 1) does not write header 2) does not replace old line
+    def write_table(self, fnOut, run):
+        if os.path.isfile(fnOut):
+            fh = open(fnOut, "r+")
+        else:
+            fh = open(fnOut, "w+")
+
+        head =  "# Table with clusters properties derived from the stellar population fit\n"
+        head = head + "# Columns (if more it is due to double pop: (fitting parameters)x2 and (feedback quantities)x2 and (flux at 1270A)x2:\n"
+        head = head + "# #0.RunName  #1.Redshift  #2.FWHM  #3.Chi2n  #4.Age  #5.Metallicity  #6.Mass  #7.EBV  #8.IonRateH  #9.IonrateHeI  #10.IonRateHeII  #11.Power  #12.Energy  #13.PowerSn  #14.EnergySn  #15.PowerStel  #16.EnergyStel  #17.MomStel  #18.PowerOB  #19.MomOB  #20.PowerWR  #21.MomWR  #22.FluxAt1270\n"
+
+        new_line = ''        
+        new_line = new_line + '{:>20}  '.format(run)
+        new_line = new_line + '{:1.5e}  '.format(self.p.redshift)
+        new_line = new_line + '{:1.5e}  '.format(self.p.fwhmUv130)
+        new_line = new_line + '{:1.5e}  '.format(self.chi2n_best_mi)
+
+        for ipop in range(self.Npop):
+            new_line = new_line + '{:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  '.format(
+                     self.age_best_mi[ipop], self.met_best_mi[ipop], self.norm_best_mi[ipop], self.ebv_best_mi[ipop])
+
+        for ipop in range(self.Npop):
+            new_line = new_line + '{:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  {:1.5e}  '.format(
+                     self.qhi_best_mi [ipop], self.qhei_best_mi[ipop], self.qheii_best_mi[ipop], self.lmech_best_mi  [ipop], self.emech_best_mi [ipop], self.lmechSn_best_mi[ipop], self.emechSn_best_mi[ipop], self.lmechStel_best_mi  [ipop], self.emechStel_best_mi  [ipop], self.pmechStel_best_mi  [ipop], self.lmechOB_best_mi  [ipop], self.pmechOB_best_mi  [ipop], self.lmechWR_best_mi  [ipop], self.pmechWR_best_mi  [ipop], self.flux1270[ipop])
+
+        new_line = new_line + "\n"
+
+        lines = fh.readlines()        
+        fh.close()
+
+        i = 0
+        line_pos = 0
+        for line in lines:
+            if line.strip()[:len(run)] == run:
+                line_pos = i
+            i = i + 1
+
+        if line_pos: 
+            lines[line_pos] = new_line
+        else:
+            lines.append(new_line)
+
+        new_fh = open(fnOut, "w+")
+        if lines[0].strip()[:7] != "# Table": new_fh.write(head)
+        for line in lines:
+            new_fh.write(line)
+
+
+        new_fh.close()
 
 
 
